@@ -1,0 +1,15 @@
+.env
+.venv/
+target/
+dbt_packages/
+logs/
+*.log
+
+# dbt เขียนไฟล์นี้เองตอนรันคำสั่งแรก เก็บ id สำหรับ anonymous usage stats
+.user.yml
+
+# GCP service-account keys - never commit these
+credentials.json
+*-credentials.json
+*keyfile*.json
+*service-account*.json

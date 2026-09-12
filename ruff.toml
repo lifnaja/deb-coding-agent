@@ -1,0 +1,25 @@
+# Lint config for the Python in this repo: scripts/ and airflow/dags/.
+# กฎที่เลือกไว้ตรงกับสิ่งที่ AGENTS.md เขียนไว้อยู่แล้ว linter จะได้จับสิ่งที่
+# คนรีวิวจะทักพอดี ไม่ใช่คนละมาตรฐานกัน
+
+target-version = "py310"
+line-length = 88
+
+# dbt/ เป็นโปรเจกต์ SQL ไม่มีโค้ด Python ของเราเอง และ target/ กับ logs/
+# เป็นของที่ dbt สร้าง
+exclude = ["dbt"]
+
+[lint]
+select = [
+    "E",   # pycodestyle
+    "W",
+    "F",   # pyflakes
+    "I",   # import ต้องเรียง
+    "UP",  # ไวยากรณ์เก่าที่ Python 3.10 ไม่ต้องใช้แล้ว
+    "B",   # bugbear
+    "ANN", # type hint บนฟังก์ชัน - AGENTS.md บังคับอยู่แล้ว
+    "D",   # docstring ของ module และทุกฟังก์ชัน - AGENTS.md บังคับอยู่แล้ว
+]
+
+[lint.pydocstyle]
+convention = "google"

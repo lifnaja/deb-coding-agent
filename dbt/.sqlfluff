@@ -1,0 +1,37 @@
+[sqlfluff]
+dialect = bigquery
+
+# The jinja templater, not the dbt templater: the dbt one needs a live BigQuery
+# connection before it can lint at all, while this one just substitutes the
+# macros stubbed below. That is what makes `sqlfluff lint` run with no
+# credentials present.
+templater = jinja
+
+max_line_length = 88
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = false
+
+# Stubs for the macros dbt injects - just enough for jinja to render the SQL so
+# sqlfluff can parse it. Referencing kwargs/varargs inside a macro body is how
+# jinja is told to accept free-form arguments, which is what lets
+# config(materialized='view') and ref('package', 'model') both go through.
+[sqlfluff:templater:jinja:macros]
+dbt_ref = {% macro ref() %}{{ varargs | last }}{% endmacro %}
+dbt_source = {% macro source(source_name, table_name) %}{{ source_name }}_{{ table_name }}{% endmacro %}
+dbt_config = {% macro config() %}{% set _ = kwargs %}{% endmacro %}
+dbt_var = {% macro var(variable, default='') %}{{ default }}{% endmacro %}
+dbt_is_incremental = {% macro is_incremental() %}false{% endmacro %}
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+# target is a context variable, not a macro, so it belongs here rather than in
+# the macros section above - a macro stub for it would not work. These values
+# are placeholders that only need to let jinja render; sqlfluff never connects
+# to BigQuery, so they do not have to match profiles.yml.
+[sqlfluff:templater:jinja:context]
+target = {"name": "dev", "project": "your-gcp-project-id", "dataset": "dbt_dev", "schema": "dbt_dev"}

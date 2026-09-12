@@ -1,0 +1,27 @@
+# GCP service-account keys live here - the whole directory is ignored, so any
+# filename dropped in is safe. Both dbt and Airflow read the key from it.
+secrets/*
+!secrets/.gitkeep
+
+# Belt and braces: these names are ignored anywhere in the repo
+credentials.json
+*-credentials.json
+*keyfile*.json
+*service-account*.json
+
+# Secrets
+.env
+
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+
+# Downloaded currency data - keep the directory, ignore its contents
+scripts/data/*
+!scripts/data/.gitkeep
+
+# The publish workflow copies these into the image build context before
+# building. They are duplicates of dbt/ and must not be committed here.
+.github/devcontainer-image/pyproject.toml
+.github/devcontainer-image/poetry.lock

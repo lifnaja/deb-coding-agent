@@ -1,0 +1,20 @@
+currency_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+
+      # แก้ project ให้เป็น GCP project id ของตัวเอง
+      project: your-gcp-project-id
+
+      dataset: dbt_dev
+      location: asia-southeast1
+
+      # path นี้อ้างอิงจากโฟลเดอร์ที่รันคำสั่ง ไม่ใช่ที่ตั้งของไฟล์นี้
+      # จึงต้องรัน dbt จากโฟลเดอร์ dbt/ เสมอ
+      keyfile: ../secrets/credentials.json
+
+      threads: 4
+      job_execution_timeout_seconds: 300
+      job_retries: 1

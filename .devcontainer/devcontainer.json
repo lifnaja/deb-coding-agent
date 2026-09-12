@@ -1,0 +1,5 @@
+{
+  "name": "currency-data-platform",
+  "image": "ghcr.io/lifnaja/deb-gen-ai-playground-devcontainer:1",
+  "updateContentCommand": "cd dbt && poetry install"
+}
