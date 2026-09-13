@@ -29,6 +29,8 @@ agent อยู่ที่ [AGENTS.md](AGENTS.md)
 │   ├── .sqlfluff        # rule ของ SQL linter
 │   └── pyproject.toml   # dependencies
 ├── scripts/             # Python utilities (stdlib อย่างเดียว)
+├── example-mcp/         # PostgreSQL + MCP server สำหรับข้อมูล Greeenery
+├── greeenery/           # CSV เริ่มต้นที่โหลดเข้า PostgreSQL
 ├── secrets/             # GCP key file (gitignore ทั้งโฟลเดอร์)
 ├── .devcontainer/       # GitHub Codespaces configuration
 ├── .agents/skills/      # skill สำหรับ AI coding agent
@@ -233,6 +235,53 @@ Wrote  scripts/data/2026-09-01/btc.json
 
 script นี้ครอบเฉพาะขั้น "ดึงข้อมูลจาก API" การวนวันที่เพื่อ backfill และการ
 โหลดขึ้น BigQuery จะไปทำใน Airflow DAG
+
+---
+
+## Example MCP + PostgreSQL
+
+`example-mcp/` สร้าง PostgreSQL จาก CSV ทั้ง 7 ไฟล์ใน `greeenery/` และเปิด MCP
+server แบบ Streamable HTTP ที่มี tool เดียวชื่อ `query` สำหรับรัน SQL แบบ
+read-only
+
+```bash
+cd example-mcp
+docker compose up --build -d
+docker compose ps
+```
+
+บริการที่เปิดบนเครื่อง:
+
+| บริการ | endpoint |
+| --- | --- |
+| PostgreSQL | `localhost:5433` |
+| MCP | `http://localhost:8000/mcp` |
+
+ส่ง argument ให้ tool `query` ในรูป `{"sql": "select * from products"}`
+ผลลัพธ์จะคืนไม่เกิน 1,000 แถว และ query จะ timeout หลัง 5 วินาที บัญชีที่ MCP
+ใช้มีสิทธิ์อ่านอย่างเดียว จึงแก้ไขข้อมูลหรือ schema ไม่ได้
+
+ตรวจ integration ผ่าน MCP protocol ได้ด้วย:
+
+```bash
+docker compose exec -T \
+  -e MCP_URL=http://127.0.0.1:8000/mcp \
+  mcp python -m unittest tests.test_server.HttpSmokeTest
+```
+
+PostgreSQL โหลด CSV เฉพาะตอนสร้าง volume ครั้งแรก ถ้าต้องการโหลด CSV ใหม่ให้ลบ
+volume แล้วเริ่มบริการอีกครั้ง (ข้อมูลใน database เดิมจะถูกลบ):
+
+```bash
+docker compose down -v
+docker compose up --build -d
+```
+
+หยุดบริการโดยไม่ลบข้อมูล:
+
+```bash
+docker compose down
+```
 
 ---
 

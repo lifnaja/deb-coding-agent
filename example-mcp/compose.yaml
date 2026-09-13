@@ -1,0 +1,47 @@
+name: example-mcp
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-greeenery}
+      POSTGRES_USER: ${POSTGRES_USER:-greeenery_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-greeenery_admin}
+      MCP_DB_USER: ${MCP_DB_USER:-greeenery_reader}
+      MCP_DB_PASSWORD: ${MCP_DB_PASSWORD:-greeenery_reader}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db/init.sh:/docker-entrypoint-initdb.d/01-init.sh:ro
+      - ./db/schema.sql:/schema/schema.sql:ro
+      - ../greeenery:/seed:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mcp:
+    build:
+      context: .
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:-greeenery}
+      DB_USER: ${MCP_DB_USER:-greeenery_reader}
+      DB_PASSWORD: ${MCP_DB_PASSWORD:-greeenery_reader}
+    ports:
+      - "127.0.0.1:${MCP_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  postgres-data:
