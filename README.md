@@ -246,9 +246,26 @@ read-only
 
 ```bash
 cd example-mcp
+cp .env.example .env        # ไม่บังคับ ถ้าจะใช้ค่า default ไม่ต้อง copy
 docker compose up --build -d
 docker compose ps
 ```
+
+ค่าที่ปรับผ่าน `.env` ได้:
+
+| ตัวแปร | ค่า default | ใช้ทำอะไร |
+| --- | --- | --- |
+| `POSTGRES_DB` | `greeenery` | ชื่อ database |
+| `POSTGRES_USER` | `greeenery_admin` | บัญชี admin สำหรับ init database |
+| `POSTGRES_PASSWORD` | `greeenery_admin` | รหัสผ่าน admin สำหรับ local development |
+| `POSTGRES_PORT` | `5433` | port PostgreSQL บนเครื่อง |
+| `MCP_DB_USER` | `greeenery_reader` | บัญชี read-only ที่ MCP ใช้ |
+| `MCP_DB_PASSWORD` | `greeenery_reader` | รหัสผ่าน MCP สำหรับ local development |
+| `MCP_PORT` | `8000` | port MCP บนเครื่อง |
+
+ค่าใน `.env.example` เป็น development default เท่านั้น ถ้าเปลี่ยน username หรือ
+password หลัง PostgreSQL สร้าง volume แล้ว ต้องสร้าง volume ใหม่เพื่อให้ init
+script สร้าง role ด้วยค่าใหม่
 
 บริการที่เปิดบนเครื่อง:
 

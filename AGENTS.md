@@ -14,6 +14,8 @@ A data platform for currency exchange-rate data:
   CDN endpoints.
 - **Transform** — dbt (`dbt-bigquery`) models the raw data into staging views
   and marts tables on BigQuery.
+- **MCP example** — Docker Compose seeds PostgreSQL from the Greeenery CSV files
+  and exposes one read-only `query` tool over Streamable HTTP.
 
 Layout:
 
@@ -21,6 +23,8 @@ Layout:
 .
 ├── airflow/          # Airflow Docker Compose env; DAGs go in airflow/dags/
 ├── dbt/              # Poetry-managed dbt project (profile lives at dbt/profiles.yml)
+├── example-mcp/      # Seeded PostgreSQL and its query-only MCP server
+├── greeenery/        # CSV seed data used by example-mcp/
 ├── scripts/          # Standalone stdlib-only Python utilities
 ├── secrets/          # GCP key file; whole directory gitignored
 ├── docs/             # Environment and workshop-maintenance notes
@@ -67,6 +71,18 @@ poetry run dbt debug    # set `project` in profiles.yml first
 outright on a 3.14 interpreter — and 3.14 is already the default `python3` on
 some machines here. Point Poetry at a supported one first:
 `poetry env use python3.13`.
+
+### Example MCP
+
+```bash
+cd example-mcp
+cp .env.example .env        # optional; Compose has matching defaults
+docker compose up --build -d
+```
+
+PostgreSQL is published on `127.0.0.1:5433` and the MCP endpoint is
+`http://127.0.0.1:8000/mcp`. The seed scripts read the CSV files from
+`greeenery/` only when the PostgreSQL volume is first created.
 
 ## Build and test commands
 
@@ -117,6 +133,22 @@ and docstring requirements in Code style below.
 ruff check .
 ruff format --check .
 ```
+
+Validate and test the MCP example from `example-mcp/`:
+
+```bash
+docker compose config --quiet
+docker compose up --build -d
+docker compose exec -T mcp python -m unittest tests.test_server
+docker compose exec -T \
+  -e MCP_URL=http://127.0.0.1:8000/mcp \
+  mcp python -m unittest tests.test_server.HttpSmokeTest
+```
+
+The HTTP smoke test verifies that the server advertises only `query`, reads a
+known seeded value, and rejects a write. `docker compose down` stops the
+services without removing the seeded database; `docker compose down -v`
+deletes it and causes the CSV files to be reloaded on the next start.
 
 ruff is not in any dependency file — it is a standalone tool. The devcontainer
 installs it with `pipx install ruff` (the image ships pipx but not uv). On a
