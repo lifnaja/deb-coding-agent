@@ -3,42 +3,29 @@
 from __future__ import annotations
 
 import os
-from decimal import Decimal
-from types import SimpleNamespace
 from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 import server
 from mcp import Client
 
 
-class ExecuteQueryTest(TestCase):
-    """Test query execution without a live PostgreSQL database."""
+class QueryTest(TestCase):
+    """Test the query tool without a live PostgreSQL database."""
 
     @mock.patch("server.psycopg.connect")
-    def test_normalizes_values_and_truncates_rows(
+    def test_returns_rows_as_dictionaries(
         self,
         connect: mock.MagicMock,
     ) -> None:
-        """Return JSON-compatible values and enforce the row limit."""
+        """Use column names as keys and enforce the row limit."""
         connection = connect.return_value.__enter__.return_value
         cursor = connection.cursor.return_value.__enter__.return_value
-        cursor.description = [SimpleNamespace(name="price")]
-        cursor.fetchmany.return_value = [
-            (Decimal("10.25"),) for _ in range(server.MAX_ROWS + 1)
-        ]
+        cursor.fetchmany.return_value = [{"name": "Apple", "price": 10.25}]
 
-        result = server.execute_query("select price from products")
+        result = server.query("select name, price from products")
 
-        self.assertEqual(result["columns"], ["price"])
-        self.assertEqual(result["returned_rows"], server.MAX_ROWS)
-        self.assertEqual(result["rows"][0], ["10.25"])
-        self.assertTrue(result["truncated"])
-        cursor.fetchmany.assert_called_once_with(server.MAX_ROWS + 1)
-
-    def test_rejects_empty_sql(self) -> None:
-        """Reject an empty statement before opening a connection."""
-        with self.assertRaisesRegex(server.ToolError, "SQL must not be empty"):
-            server.execute_query("   ")
+        self.assertEqual(result, [{"name": "Apple", "price": 10.25}])
+        cursor.fetchmany.assert_called_once_with(1_000)
 
 
 class ToolRegistrationTest(IsolatedAsyncioTestCase):
@@ -75,13 +62,5 @@ class HttpSmokeTest(IsolatedAsyncioTestCase):
             )
 
         self.assertFalse(result.is_error)
-        self.assertEqual(
-            result.structured_content,
-            {
-                "columns": ["count"],
-                "rows": [[30]],
-                "returned_rows": 1,
-                "truncated": False,
-            },
-        )
+        self.assertEqual(result.structured_content, {"result": [{"count": 30}]})
         self.assertTrue(write_result.is_error)

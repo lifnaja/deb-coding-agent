@@ -24,7 +24,7 @@ Layout:
 ├── airflow/          # Airflow Docker Compose env; DAGs go in airflow/dags/
 ├── dbt/              # Poetry-managed dbt project (profile lives at dbt/profiles.yml)
 ├── example-mcp/      # Seeded PostgreSQL and its query-only MCP server
-├── greeenery/        # CSV seed data used by example-mcp/
+│   └── greeenery/    # CSV seed data used by example-mcp/
 ├── scripts/          # Standalone stdlib-only Python utilities
 ├── secrets/          # GCP key file; whole directory gitignored
 ├── docs/             # Environment and workshop-maintenance notes
@@ -82,7 +82,7 @@ docker compose up --build -d
 
 PostgreSQL is published on `127.0.0.1:5433` and the MCP endpoint is
 `http://127.0.0.1:8000/mcp`. The seed scripts read the CSV files from
-`greeenery/` only when the PostgreSQL volume is first created.
+`example-mcp/greeenery/` only when the PostgreSQL volume is first created.
 
 ## Build and test commands
 

@@ -30,7 +30,7 @@ agent อยู่ที่ [AGENTS.md](AGENTS.md)
 │   └── pyproject.toml   # dependencies
 ├── scripts/             # Python utilities (stdlib อย่างเดียว)
 ├── example-mcp/         # PostgreSQL + MCP server สำหรับข้อมูล Greeenery
-├── greeenery/           # CSV เริ่มต้นที่โหลดเข้า PostgreSQL
+│   └── greeenery/       # CSV เริ่มต้นที่โหลดเข้า PostgreSQL
 ├── secrets/             # GCP key file (gitignore ทั้งโฟลเดอร์)
 ├── .devcontainer/       # GitHub Codespaces configuration
 ├── .agents/skills/      # skill สำหรับ AI coding agent
@@ -240,9 +240,9 @@ script นี้ครอบเฉพาะขั้น "ดึงข้อม�
 
 ## Example MCP + PostgreSQL
 
-`example-mcp/` สร้าง PostgreSQL จาก CSV ทั้ง 7 ไฟล์ใน `greeenery/` และเปิด MCP
-server แบบ Streamable HTTP ที่มี tool เดียวชื่อ `query` สำหรับรัน SQL แบบ
-read-only
+`example-mcp/` สร้าง PostgreSQL จาก CSV ทั้ง 7 ไฟล์ใน
+`example-mcp/greeenery/` และเปิด MCP server แบบ Streamable HTTP ที่มี tool
+เดียวชื่อ `query` สำหรับรัน SQL แบบ read-only
 
 ```bash
 cd example-mcp
