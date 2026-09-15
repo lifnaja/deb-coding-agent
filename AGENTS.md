@@ -197,6 +197,10 @@ working directory — the same trap as dbt's `keyfile`. Run it from inside
 
 ## Environment and credentials
 
+- **Secret-file rule:** never read, open, print, copy, quote, or otherwise
+  inspect any file inside `secrets/`. This includes `secrets/*.json`,
+  `credentials.json`, and any other credential material. Only confirm whether
+  the directory or file exists; do not read its contents.
 - BigQuery auth is `method: service-account` with a key file. `profiles.yml`
   holds every setting as a literal value — no `env_var()` and no dotenv file
   for dbt. This is a teaching repo: students edit `project` in the file
