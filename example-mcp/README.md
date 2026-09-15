@@ -14,7 +14,7 @@ docker compose ps
 
 ## GitHub Copilot ใน VS Code
 
-ต้องใช้ VS Code 1.99 ขึ้นไปและเปิดใช้งาน GitHub Copilot จากนั้นสร้างไฟล์
+เปิดใช้งาน GitHub Copilot จากนั้นสร้างไฟล์
 `.vscode/mcp.json` ที่ root ของ repository:
 
 ```json
@@ -41,33 +41,6 @@ docker compose ps
 ใช้ tool query จาก greeenery-postgres เพื่อแสดงสินค้า 5 รายการที่ราคาสูงสุด
 ```
 
-หรือระบุ SQL โดยตรง:
-
-```text
-ใช้ tool query รัน SQL นี้:
-select name, price from products order by price desc limit 5
-```
-
-## GitHub Copilot CLI
-
-ถ้าใช้ Copilot CLI ให้สร้าง `.mcp.json` ที่ root ของ repository แทน ไม่ต้อง
-สร้างทั้งสองไฟล์ เพราะ Copilot CLI ไม่อ่าน `.vscode/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "greeenery-postgres": {
-      "type": "http",
-      "url": "http://127.0.0.1:8000/mcp",
-      "tools": ["query"]
-    }
-  }
-}
-```
-
-เปิด `copilot` จาก repository นี้ ยืนยันว่าเชื่อถือ workspace เมื่อระบบถาม
-แล้วใช้ `/mcp list` เพื่อตรวจว่า `greeenery-postgres` พร้อมใช้งาน
-
 ## แก้ปัญหาเบื้องต้น
 
 ถ้าไม่เห็น tool หรือเชื่อมต่อไม่ได้:
@@ -90,4 +63,3 @@ MCP endpoint ไม่มี authentication แต่ publish เฉพาะ `1
 เอกสารอ้างอิง:
 
 - [Add and manage MCP servers in VS Code](https://code.visualstudio.com/docs/agent-customization/mcp-servers)
-- [Adding MCP servers for GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers)
