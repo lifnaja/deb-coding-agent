@@ -244,6 +244,9 @@ script นี้ครอบเฉพาะขั้น "ดึงข้อม�
 `example-mcp/greeenery/` และเปิด MCP server แบบ Streamable HTTP ที่มี tool
 เดียวชื่อ `query` สำหรับรัน SQL แบบ read-only
 
+วิธีตั้งค่า GitHub Copilot ให้เรียก MCP server นี้อยู่ใน
+[example-mcp/README.md](example-mcp/README.md)
+
 ```bash
 cd example-mcp
 cp .env.example .env        # ไม่บังคับ ถ้าจะใช้ค่า default ไม่ต้อง copy

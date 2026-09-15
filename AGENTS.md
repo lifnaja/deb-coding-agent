@@ -1,8 +1,9 @@
 # AGENTS.md
 
 Guidance for AI coding agents working in this repository. Human-facing setup
-docs live in [README.md](README.md); this file covers the operational details an
-agent needs to make correct changes.
+docs live in [README.md](README.md), with the GitHub Copilot client guide in
+[example-mcp/README.md](example-mcp/README.md). This file covers the operational
+details an agent needs to make correct changes.
 
 ## Project overview
 
@@ -33,10 +34,10 @@ Layout:
 └── .github/          # Prebuilt devcontainer image and its build workflow
 ```
 
-All human-facing documentation is consolidated in the root
-[README.md](README.md) — subdirectories deliberately have no README of their
-own. When you change setup steps, commands, or environment variables, update
-the root README and do not add a new README next to the code.
+Human-facing documentation is consolidated in the root [README.md](README.md),
+except for the GitHub Copilot client guide in
+[example-mcp/README.md](example-mcp/README.md). When you change setup steps,
+commands, or environment variables, update the root README too.
 
 ## Setup commands
 
